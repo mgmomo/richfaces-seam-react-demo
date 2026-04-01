@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.vision</groupId>
+        <artifactId>vision4-seam-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>vision4-seam-ear</artifactId>
+    <packaging>ear</packaging>
+    <name>Vision4 Seam Demo - EAR</name>
+    <description>EAR packaging wrapping the WAR with all libraries in EAR lib/</description>
+
+    <dependencies>
+        <!-- The WAR module (skinny: no JARs in WEB-INF/lib) -->
+        <dependency>
+            <groupId>com.vision</groupId>
+            <artifactId>vision4-seam</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <!-- === All WAR compile-scope dependencies (moved to EAR lib/) === -->
+
+        <!-- JBoss Seam 2.2.2 -->
+        <dependency>
+            <groupId>org.jboss.seam</groupId>
+            <artifactId>jboss-seam</artifactId>
+            <version>${seam.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.el</groupId>
+                    <artifactId>el-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.seam</groupId>
+            <artifactId>jboss-seam-ui</artifactId>
+            <version>${seam.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.seam</groupId>
+                    <artifactId>jboss-seam</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- JSF 1.2 (Sun RI / Mojarra) -->
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>1.2_15</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
+            <version>1.2_15</version>
+        </dependency>
+
+        <!-- Facelets 1.1 -->
+        <dependency>
+            <groupId>com.sun.facelets</groupId>
+            <artifactId>jsf-facelets</artifactId>
+            <version>1.1.15</version>
+        </dependency>
+
+        <!-- RichFaces 3.3.4 -->
+        <dependency>
+            <groupId>org.richfaces.framework</groupId>
+            <artifactId>richfaces-api</artifactId>
+            <version>${richfaces.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.richfaces.framework</groupId>
+            <artifactId>richfaces-impl</artifactId>
+            <version>${richfaces.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.richfaces.ui</groupId>
+            <artifactId>richfaces-ui</artifactId>
+            <version>${richfaces.version}</version>
+        </dependency>
+
+        <!-- Hibernate 3 -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>3.3.0.SP1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.transaction</groupId>
+                    <artifactId>jta</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>3.1.0.GA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-commons-annotations</artifactId>
+            <version>3.1.0.GA</version>
+        </dependency>
+
+        <!-- JBoss EL -->
+        <dependency>
+            <groupId>org.jboss.el</groupId>
+            <artifactId>jboss-el</artifactId>
+            <version>1.0_02.CR5</version>
+        </dependency>
+
+        <!-- Javassist -->
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.12.1.GA</version>
+        </dependency>
+
+        <!-- DOM4J -->
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+
+        <!-- SLF4J -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.4.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>vision4-seam</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <version>6</version>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <outputFileNameMapping>@{artifactId}@@{dashClassifier?}@.@{extension}@</outputFileNameMapping>
+                    <!-- Fully skinny WAR: all JARs moved from WEB-INF/lib to EAR lib/ -->
+                    <skinnyWars>true</skinnyWars>
+                    <!-- Exclude jboss-seam-jul (causes StackOverflowError from logging recursion) -->
+                    <packagingExcludes>lib/jboss-seam-jul*.jar</packagingExcludes>
+                    <modules>
+                        <webModule>
+                            <groupId>com.vision</groupId>
+                            <artifactId>vision4-seam</artifactId>
+                            <contextRoot>/vision4-seam</contextRoot>
+                            <bundleFileName>vision4-seam.war</bundleFileName>
+                        </webModule>
+                    </modules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

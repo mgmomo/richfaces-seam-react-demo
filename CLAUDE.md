@@ -16,33 +16,44 @@ Vision4-seam is a legacy demo application simulating a small enterprise Java EE 
 # Start JBoss AS 7.1.1 using the local environment
 ./start-jboss.sh
 
-# In a separate terminal: build React frontend + Java WAR and deploy
+# In a separate terminal: build and deploy as WAR (default)
 ./build-deploy.sh
+
+# Or: build and deploy as EAR
+./build-deploy.sh --ear
 ```
 
 ### Scripts
 
 - **`start-jboss.sh`** — Starts JBoss AS 7.1.1 using the local Java 7 and JBoss installation. Automatically stops any running instance, cleans stale deployment markers, and starts with port offset 100.
-- **`build-deploy.sh`** — Builds the React frontend (`npm run build`), builds the WAR (`mvn clean package`), copies it to the local JBoss deployments folder, and waits for deployment confirmation.
+- **`build-deploy.sh`** — Builds the React frontend (`npm run build`), builds WAR + EAR (`mvn clean package`), and deploys to local JBoss. Use `--ear` flag for EAR deployment.
+
+### Deployment Modes
+
+- **WAR (default):** Fat WAR with all libraries in `WEB-INF/lib`. Deployed as `vision4-seam.war`.
+- **EAR (`--ear`):** Skinny WAR with empty `WEB-INF/lib`. All libraries in `EAR/lib/`. Deployed as `vision4-seam.ear`.
 
 ### Manual Build and Deploy
 
 ```bash
 # Build the React frontend
-cd frontend && npm run build && cd ..
+cd war/frontend && npm run build && cd ../..
 
-# Build the WAR (requires Maven 3.x; runs on Java 17 for compilation, targets Java 7 bytecode)
+# Build WAR + EAR (requires Maven 3.x; runs on Java 17 for compilation, targets Java 7 bytecode)
 mvn clean package
 
-# Deploy to local JBoss AS 7.1.1
-cp target/vision4-seam.war local/jboss-as-7.1.1.Final/standalone/deployments/
+# Deploy WAR to local JBoss AS 7.1.1
+cp war/target/vision4-seam.war local/jboss-as-7.1.1.Final/standalone/deployments/
+
+# Or deploy EAR
+cp ear/target/vision4-seam.ear local/jboss-as-7.1.1.Final/standalone/deployments/
 ```
 
 The application is accessible at:
 - **JSF app:** `http://localhost:8180/vision4-seam/home.seam`
 - **React app:** `http://localhost:8180/vision4-seam/app/`
 
-Uses the built-in H2 in-memory datasource (`java:jboss/datasources/ExampleDS`). Schema is auto-created on deploy (`hibernate.hbm2ddl.auto=create-drop`). Seed data loaded from `src/main/resources/import.sql`.
+Uses the built-in H2 in-memory datasource (`java:jboss/datasources/ExampleDS`). Schema is auto-created on deploy (`hibernate.hbm2ddl.auto=create-drop`). Seed data loaded from `war/src/main/resources/import.sql`.
 
 **Note:** JBoss AS 7.1.1 on Java 7 has limited PermGen space. After several hot-redeployments, PermGen may be exhausted causing deployment failures. Restart JBoss (`./start-jboss.sh`) to resolve.
 
@@ -81,42 +92,47 @@ Two-layer architecture: **Seam POJO action components** (UI/conversation logic) 
 ### Source Layout
 
 ```
-start-jboss.sh              # Start local JBoss AS 7.1.1
-build-deploy.sh             # Build frontend + WAR and deploy
+pom.xml                         # Parent POM (multi-module: war, ear)
+start-jboss.sh                  # Start local JBoss AS 7.1.1
+build-deploy.sh                 # Build and deploy (--ear for EAR mode)
 
-frontend/                   # React SPA (Vite + React 19 + React Router)
-  src/
-    api/client.js           # API base client (base URL: /vision4-seam/api)
-    api/dashboardApi.js     # Dashboard API (fetches aggregated stats)
-    components/Layout.jsx   # App layout (hides chrome when embedded in JSF iframe)
-    pages/                  # Page components: HomePage, DashboardPage, PersonListPage, LocationListPage, etc.
-  vite.config.js            # Vite config (base: /vision4-seam/app/, dev proxy)
+war/                            # WAR module
+  pom.xml                       # WAR packaging
+  frontend/                     # React SPA (Vite + React 19 + React Router)
+    src/
+      api/client.js             # API base client (base URL: /vision4-seam/api)
+      api/dashboardApi.js       # Dashboard API (fetches aggregated stats)
+      components/Layout.jsx     # App layout (hides chrome when embedded in JSF iframe)
+      pages/                    # Page components: HomePage, DashboardPage, PersonListPage, etc.
+    vite.config.js              # Vite config (base: /vision4-seam/app/, dev proxy)
+  src/main/java/com/vision/demo/
+    model/                      # JPA entities: Person, Location, LocationState enum
+    action/                     # Seam POJO action components
+    service/                    # @Stateless EJB: DataService (all persistence operations)
+    rest/                       # JAX-RS REST resources: PersonResource, LocationResource, DashboardResource, AuthResource
+  src/main/webapp/
+    layout/template.xhtml       # Facelets master template (header, menu, footer, React toggle)
+    home.xhtml                  # Landing page
+    personEdit.xhtml            # Create/edit person with location assignment
+    personList.xhtml            # Person list with rich:dataTable
+    personReact.xhtml           # Person list via embedded React iframe
+    locationEdit.xhtml          # Create/edit location
+    locationList.xhtml          # Location list with rich:dataTable
+    locationReact.xhtml         # Location list via embedded React iframe
+    dashboardReact.xhtml        # Dashboard via embedded React iframe
+    about.xhtml                 # Application info page
+    css/style.css               # All application styles
+    WEB-INF/
+      components.xml            # Seam config (jndi-pattern, transaction, conversation)
+      pages.xml                 # Page actions and parameter bindings
+      faces-config.xml          # Facelets ViewHandler registration
+      web.xml                   # Servlets, filters, RichFaces skin config
+      jboss-deployment-structure.xml  # WAR-level: excludes JBoss AS 7 built-in JSF 2.0
 
-src/main/java/com/vision/demo/
-  model/          # JPA entities: Person, Location, LocationState enum
-  action/         # Seam POJO action components: PersonAction, LocationAction, *ListAction
-  service/        # @Stateless EJB: DataService (all persistence operations)
-  rest/           # JAX-RS REST resources: PersonResource, LocationResource, DashboardResource, AuthResource
-
-src/main/webapp/
-  layout/template.xhtml    # Facelets master template (header, menu, footer)
-  home.xhtml               # Landing page
-  personEdit.xhtml         # Create/edit person with location assignment
-  personList.xhtml         # Person list with rich:dataTable
-  personReact.xhtml        # Person list via embedded React iframe
-  locationEdit.xhtml       # Create/edit location
-  locationList.xhtml       # Location list with rich:dataTable
-  locationReact.xhtml      # Location list via embedded React iframe
-  dashboardReact.xhtml     # Dashboard via embedded React iframe
-  about.xhtml              # Application info page
-  css/style.css            # All application styles
-
-WEB-INF/
-  components.xml                # Seam config (jndi-pattern, transaction, conversation)
-  pages.xml                     # Page actions and parameter bindings
-  faces-config.xml              # Facelets ViewHandler registration
-  web.xml                       # Servlets, filters, RichFaces skin config
-  jboss-deployment-structure.xml # Excludes JBoss AS 7 built-in JSF 2.0 modules
+ear/                            # EAR module
+  pom.xml                       # EAR packaging (skinnyWars, all libs in EAR lib/)
+  src/main/application/META-INF/
+    jboss-deployment-structure.xml  # EAR-level: JSF 2.0 exclusion + module dependencies
 
 local/                          # Local runtime environment (not in git)
   jboss-as-7.1.1.Final/        # JBoss AS 7.1.1 application server
@@ -131,12 +147,19 @@ local/                          # Local runtime environment (not in git)
 
 Seam 2.2.2 was designed for JBoss AS 4/5/6. Running on JBoss AS 7.1.1 requires:
 
-- `jboss-deployment-structure.xml` excludes the built-in JSF 2.0 modules so bundled JSF 1.2 is used (schema 1.0 only — `exclude-subsystems` is not supported in AS 7.1.1)
-- JSF 1.2 RI (Mojarra), Facelets 1.1, and RichFaces 3.3.4 are bundled in the WAR
-- Hibernate 3.3.0.SP1 bundled in WAR for Seam 2 proxy compatibility (JBoss AS 7 ships Hibernate 4 which breaks Seam's `HibernateSessionProxy`)
-- `jboss-seam-jul.jar` excluded via maven-war-plugin `packagingExcludes` to avoid StackOverflowError from logging recursion
+- `jboss-deployment-structure.xml` excludes the built-in JSF 2.0 modules so bundled JSF 1.2 is used
+- JSF 1.2 RI (Mojarra), Facelets 1.1, and RichFaces 3.3.4 are bundled
+- Hibernate 3.3.0.SP1 bundled for Seam 2 proxy compatibility (JBoss AS 7 ships Hibernate 4 which breaks Seam's `HibernateSessionProxy`)
+- `jboss-seam-jul.jar` excluded to avoid StackOverflowError from logging recursion (via `packagingExcludes` in both WAR and EAR plugins)
 - Maven repositories `jboss-public` and `jboss-deprecated` are required for resolving legacy artifacts
 - Maven plugin versions must be 3.x+ compatible (e.g., maven-war-plugin 3.4.0, maven-compiler-plugin 3.11.0) since Maven runs on Java 17
+
+### EAR Packaging Notes
+
+- EAR uses `skinnyWars=true`: all libraries are in `EAR/lib/`, WAR `WEB-INF/lib` is empty
+- The EAR-level `jboss-deployment-structure.xml` (schema 1.1) excludes JSF 2.0 at the EAR deployment level so bundled JSF 1.2 from `EAR/lib/` is used everywhere
+- `jboss-seam.jar` in `EAR/lib/` resolves the `VFSScanner → AbstractScanner` ClassNotFoundException that occurs when JBoss AS 7's implicit `org.jboss.integration.ext-content` module tries to link against Seam classes at the EAR-level classloader
+- WAR sub-deployment inherits libraries from `EAR/lib/` and adds JAX-RS/RESTEasy/Jackson module dependencies
 
 ## RichFaces / JSF Notes
 
