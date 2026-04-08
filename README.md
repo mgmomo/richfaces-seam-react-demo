@@ -122,3 +122,7 @@ The application demonstrates integrating a React SPA into an existing legacy Jav
 ## License
 
 MIT
+
+## Git Repo
+https://github.com/mgmomo/richfaces-seam-react-demo.git
+
