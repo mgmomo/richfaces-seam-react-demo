@@ -62,8 +62,22 @@ local/
 
 ### Access
 
+- **Landing page:** http://localhost:8180/vision4-seam/
 - **JSF app:** http://localhost:8180/vision4-seam/home.seam
 - **React app:** http://localhost:8180/vision4-seam/app/
+
+### Frontend Development (without redeployment)
+
+To develop the React frontend with hot reload, use the Vite dev server. Changes to TSX, TypeScript, and CSS files are reflected instantly in the browser without rebuilding or redeploying the application.
+
+**Prerequisite:** JBoss must be running (`./start-jboss.sh`) so the REST API is available.
+
+```bash
+cd war/frontend
+npm run dev
+```
+
+The dev server starts at `http://localhost:5173/vision4-seam/app/` with Hot Module Replacement (HMR). API requests to `/vision4-seam/api` are automatically proxied to JBoss on port 8180 (configured in `vite.config.ts`).
 
 ## Project Structure
 
