@@ -20,6 +20,7 @@ function DashLink({ to, jsfPath, children }: DashLinkProps) {
       <a
         href={`${CTX}${jsfPath}`}
         target="_top"
+        className="text-link"
         onClick={(e) => {
           e.preventDefault();
           window.top!.location.href = `${CTX}${jsfPath}`;
@@ -29,13 +30,13 @@ function DashLink({ to, jsfPath, children }: DashLinkProps) {
       </a>
     );
   }
-  return <Link to={to}>{children}</Link>;
+  return <Link to={to} className="text-link">{children}</Link>;
 }
 
 function PieChart({ data }: { data: StateCount[] }) {
   if (!data || data.length === 0) return null;
   const total = data.reduce((sum, d) => sum + d.count, 0);
-  if (total === 0) return <p className="muted">No locations yet</p>;
+  if (total === 0) return <p className="text-muted">No locations yet</p>;
 
   const size = 160;
   const cx = size / 2;
@@ -88,9 +89,9 @@ function PieChart({ data }: { data: StateCount[] }) {
 }
 
 function BarChart({ data }: { data: LocationPersonCount[] }) {
-  if (!data || data.length === 0) return <p className="muted">No data yet</p>;
+  if (!data || data.length === 0) return <p className="text-muted">No data yet</p>;
   const max = Math.max(...data.map((d) => d.personCount));
-  if (max === 0) return <p className="muted">No assignments yet</p>;
+  if (max === 0) return <p className="text-muted">No assignments yet</p>;
 
   return (
     <div className="bar-chart">
@@ -129,11 +130,11 @@ export default function DashboardPage() {
   if (!data) return <div className="loading">Loading dashboard...</div>;
 
   return (
-    <div className="dashboard">
-      <h2>Dashboard</h2>
-      <p className="muted">Läuft unter TypeScript</p>
+    <div>
+      <h2 className="page-title">Dashboard</h2>
+      <p className="text-muted mb-4">Läuft unter TypeScript</p>
 
-      <div className="dashboard-cards">
+      <div className="dash-grid">
         <div className="dash-card">
           <div className="dash-card-value">{data.totalPersons}</div>
           <div className="dash-card-label">Total People</div>
@@ -160,13 +161,13 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="dashboard-section">
-        <h3>Recent Items</h3>
-        <div className="dashboard-recent">
-          <div className="recent-panel">
-            <h4>Recent People</h4>
+      <div className="dash-section">
+        <h3 className="section-title">Recent Items</h3>
+        <div className="dash-two-col">
+          <div className="card">
+            <h4 className="sub-title">Recent People</h4>
             {data.recentPersons.length === 0 ? (
-              <p className="muted">No people yet</p>
+              <p className="text-muted">No people yet</p>
             ) : (
               <table className="data-table">
                 <thead>
@@ -195,10 +196,10 @@ export default function DashboardPage() {
               </table>
             )}
           </div>
-          <div className="recent-panel">
-            <h4>Recent Locations</h4>
+          <div className="card">
+            <h4 className="sub-title">Recent Locations</h4>
             {data.recentLocations.length === 0 ? (
-              <p className="muted">No locations yet</p>
+              <p className="text-muted">No locations yet</p>
             ) : (
               <table className="data-table">
                 <thead>
@@ -230,15 +231,15 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="dashboard-section">
-        <h3>Charts</h3>
-        <div className="dashboard-charts">
-          <div className="chart-panel">
-            <h4>Location Status</h4>
+      <div className="dash-section">
+        <h3 className="section-title">Charts</h3>
+        <div className="dash-two-col">
+          <div className="card">
+            <h4 className="sub-title">Location Status</h4>
             <PieChart data={data.locationStateDistribution} />
           </div>
-          <div className="chart-panel">
-            <h4>Top Locations by Person Count</h4>
+          <div className="card">
+            <h4 className="sub-title">Top Locations by Person Count</h4>
             <BarChart data={data.personsPerLocation} />
           </div>
         </div>

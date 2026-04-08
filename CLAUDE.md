@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Vision4-seam is a legacy demo application simulating a small enterprise Java EE system. It manages persons and locations with a many-to-many relationship between them.
 
-**Stack:** JBoss Seam 2.2.2.Final, RichFaces 3.3.4.Final, JSF 1.2 (Facelets 1.1), JPA 2.0, Hibernate 3.3.0.SP1 (bundled), deployed on JBoss AS 7.1.1.
+**Stack:** JBoss Seam 2.2.2.Final, RichFaces 3.3.4.Final, JSF 1.2 (Facelets 1.1), JPA 2.0, Hibernate 3.3.0.SP1 (bundled), deployed on JBoss AS 7.1.1. The React frontend uses TypeScript, Tailwind CSS 4, and Vite.
 
 ## Build and Deploy
 
@@ -99,13 +99,17 @@ build-deploy.sh                 # Build and deploy (--ear for EAR mode)
 
 war/                            # WAR module
   pom.xml                       # WAR packaging
-  frontend/                     # React SPA (Vite + React 19 + React Router)
+  frontend/                     # React SPA (TypeScript, Vite, Tailwind CSS 4)
     src/
-      api/client.js             # API base client (base URL: /vision4-seam/api)
-      api/dashboardApi.js       # Dashboard API (fetches aggregated stats)
-      components/Layout.jsx     # App layout (hides chrome when embedded in JSF iframe)
-      pages/                    # Page components: HomePage, DashboardPage, PersonListPage, etc.
-    vite.config.js              # Vite config (base: /vision4-seam/app/, dev proxy)
+      api/client.ts             # Typed API base client (base URL: /vision4-seam/api)
+      api/dashboardApi.ts       # Dashboard API (fetches aggregated stats)
+      components/Layout.tsx     # App layout (hides chrome when embedded in JSF iframe)
+      pages/                    # Page components (TSX): HomePage, DashboardPage, PersonListPage, etc.
+      context/AuthContext.tsx    # Auth context with typed hooks
+      types.ts                  # Shared TypeScript interfaces (PersonDto, LocationDto, etc.)
+      App.css                   # Tailwind CSS 4 theme (@theme tokens + @layer component classes)
+    tsconfig.json               # TypeScript config (strict mode, react-jsx)
+    vite.config.ts              # Vite config (base: /vision4-seam/app/, dev proxy, Tailwind plugin)
   src/main/java/com/vision/demo/
     model/                      # JPA entities: Person, Location, LocationState enum
     action/                     # Seam POJO action components
@@ -170,3 +174,29 @@ Seam 2.2.2 was designed for JBoss AS 4/5/6. Running on JBoss AS 7.1.1 requires:
 - AJAX updates use `<a4j:commandButton>` with `reRender` pointing to component IDs
 - `<rich:calendar>` provides date picker; `<rich:dataTable>` provides sortable/pageable tables
 - JSF 1.2 has no `<h:head>`/`<h:body>` — use plain HTML `<head>`/`<body>` inside `<f:view>`
+
+## React Frontend
+
+### TypeScript
+
+All React code is TypeScript (`.ts`/`.tsx`). Shared interfaces live in `war/frontend/src/types.ts` (`PersonDto`, `LocationDto`, `User`, `DashboardData`, etc.). The API client (`api/client.ts`) provides a generic `apiRequest<T>()` function. The build script runs `tsc --noEmit` before `vite build` to enforce type-checking.
+
+### Tailwind CSS 4
+
+Styling uses Tailwind CSS 4 via the `@tailwindcss/vite` plugin. Configuration is CSS-first (no `tailwind.config.js`).
+
+**Theme** (`App.css`):
+- `@theme` block defines custom design tokens: `brand-dark`, `brand-medium`, `brand-border`, `brand-muted`, `accent`
+- `@layer components` defines semantic CSS classes that compose Tailwind utilities via `@apply`
+
+**Key component classes** (defined in `App.css`):
+- **Layout:** `app-shell`, `app-header`, `app-main`, `app-footer`, `nav-link`, `header-input`, `header-select`, `role-badge`
+- **Buttons:** `btn`, `btn-sm`, `btn-secondary`, `btn-danger`
+- **Tables:** `data-table` (with nested `th`/`td`/`tr:hover` rules), `table-empty`
+- **Forms:** `edit-form`, `form-group`, `form-label`, `form-input`, `form-actions`, `checkbox-group`, `checkbox-label`
+- **Cards:** `card`, `dash-card`, `dash-card-value`, `dash-card-label`, `dash-grid`, `dash-section`, `dash-two-col`
+- **Typography:** `page-title`, `page-header`, `section-title`, `sub-title`, `text-muted`, `text-link`
+- **Messages:** `error-msg`, `loading`
+- **Charts:** `chart-with-legend`, `chart-legend`, `legend-item`, `legend-color`, `bar-chart`, `bar-row`, `bar-label`, `bar-track`, `bar-fill`, `bar-value`
+
+**Note:** Tailwind CSS 4 does not allow `@apply` with custom classes defined in the same `@layer` — only Tailwind utility classes can be used with `@apply`.

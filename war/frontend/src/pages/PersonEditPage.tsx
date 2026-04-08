@@ -89,46 +89,28 @@ export default function PersonEditPage() {
 
   return (
     <div>
-      <h2>{isNew ? 'Add Person' : 'Edit Person'}</h2>
+      <h2 className="page-title">{isNew ? 'Add Person' : 'Edit Person'}</h2>
 
       {error && <div className="error-msg">{error}</div>}
 
       <form onSubmit={handleSubmit} className="edit-form">
         <div className="form-group">
-          <label htmlFor="firstName">First Name *</label>
-          <input
-            id="firstName"
-            name="firstName"
-            value={form.firstName}
-            onChange={handleChange}
-            required
-          />
+          <label htmlFor="firstName" className="form-label">First Name *</label>
+          <input id="firstName" name="firstName" value={form.firstName} onChange={handleChange} required className="form-input" />
         </div>
 
         <div className="form-group">
-          <label htmlFor="lastName">Last Name *</label>
-          <input
-            id="lastName"
-            name="lastName"
-            value={form.lastName}
-            onChange={handleChange}
-            required
-          />
+          <label htmlFor="lastName" className="form-label">Last Name *</label>
+          <input id="lastName" name="lastName" value={form.lastName} onChange={handleChange} required className="form-input" />
         </div>
 
         <div className="form-group">
-          <label htmlFor="dateOfBirth">Date of Birth</label>
-          <input
-            id="dateOfBirth"
-            name="dateOfBirth"
-            type="date"
-            value={form.dateOfBirth}
-            onChange={handleChange}
-          />
+          <label htmlFor="dateOfBirth" className="form-label">Date of Birth</label>
+          <input id="dateOfBirth" name="dateOfBirth" type="date" value={form.dateOfBirth} onChange={handleChange} className="form-input" />
         </div>
 
         <div className="form-group">
-          <label>Locations</label>
+          <label className="form-label">Locations</label>
           <div className="checkbox-group">
             {allLocations.map((loc) => (
               <label key={loc.id} className="checkbox-label">
@@ -136,16 +118,17 @@ export default function PersonEditPage() {
                   type="checkbox"
                   checked={form.locationIds.includes(loc.id)}
                   onChange={() => handleLocationToggle(loc.id)}
+                  className="w-auto"
                 />
                 {loc.locationName} ({loc.zipCode})
               </label>
             ))}
-            {allLocations.length === 0 && <span className="muted">No active locations available.</span>}
+            {allLocations.length === 0 && <span className="text-muted">No active locations available.</span>}
           </div>
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="btn" disabled={saving}>
+          <button type="submit" className="btn disabled:opacity-50" disabled={saving}>
             {saving ? 'Saving...' : 'Save'}
           </button>
           <button type="button" className="btn btn-secondary" onClick={() => navigate('/persons')}>

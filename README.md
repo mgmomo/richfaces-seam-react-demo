@@ -13,8 +13,9 @@ A demo application showing a legacy Java EE stack (JBoss Seam 2, RichFaces 3, JS
 - H2 in-memory database
 
 **Modern (React):**
-- React 19
+- React 19 (TypeScript)
 - React Router (HashRouter)
+- Tailwind CSS 4
 - Vite
 
 ## Features
@@ -73,13 +74,16 @@ build-deploy.sh          # Build and deploy (--ear for EAR mode)
 
 war/                     # WAR module
   pom.xml                # WAR packaging (fat WAR with all libs)
-  frontend/              # React SPA (Vite + React 19)
+  frontend/              # React SPA (TypeScript, Vite, Tailwind CSS 4)
     src/
-      api/               # REST API client
-      components/        # Layout, ProtectedRoute
-      pages/             # Page components
-      context/           # Auth context
-    vite.config.js
+      api/               # REST API client (TypeScript)
+      components/        # Layout, ProtectedRoute (TSX)
+      pages/             # Page components (TSX)
+      context/           # Auth context (TSX)
+      types.ts           # Shared TypeScript interfaces
+      App.css            # Tailwind CSS 4 theme and component classes
+    tsconfig.json
+    vite.config.ts
   src/main/java/com/vision/demo/
     model/               # JPA entities: Person, Location
     action/              # Seam POJO action components

@@ -37,7 +37,7 @@ export default function PersonListPage() {
   return (
     <div>
       <div className="page-header">
-        <h2>People</h2>
+        <h2 className="page-title mb-0">People</h2>
         {isAdmin && (
           <Link to="/persons/new" className="btn">Add Person</Link>
         )}
@@ -65,15 +65,17 @@ export default function PersonListPage() {
               <td>{p.dateOfBirth || ''}</td>
               <td>{p.locations ? p.locations.map((l) => l.locationName).join(', ') : ''}</td>
               {isAdmin && (
-                <td className="actions">
-                  <Link to={`/persons/${p.id}/edit`} className="btn btn-sm">Edit</Link>
-                  <button onClick={() => handleDelete(p.id, p.firstName + ' ' + p.lastName)} className="btn btn-sm btn-danger">Delete</button>
+                <td>
+                  <div className="flex gap-1">
+                    <Link to={`/persons/${p.id}/edit`} className="btn btn-sm">Edit</Link>
+                    <button onClick={() => handleDelete(p.id, p.firstName + ' ' + p.lastName)} className="btn btn-sm btn-danger">Delete</button>
+                  </div>
                 </td>
               )}
             </tr>
           ))}
           {persons.length === 0 && (
-            <tr><td colSpan={isAdmin ? 6 : 5} className="empty">No people found.</td></tr>
+            <tr><td colSpan={isAdmin ? 6 : 5} className="table-empty">No people found.</td></tr>
           )}
         </tbody>
       </table>

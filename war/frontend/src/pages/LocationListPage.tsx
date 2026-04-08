@@ -36,7 +36,7 @@ export default function LocationListPage() {
   return (
     <div>
       <div className="page-header">
-        <h2>Locations</h2>
+        <h2 className="page-title mb-0">Locations</h2>
         {isAdmin && (
           <Link to="/locations/new" className="btn">Add Location</Link>
         )}
@@ -64,15 +64,17 @@ export default function LocationListPage() {
               <td>{l.zipCode || ''}</td>
               <td>{l.stateLabel}</td>
               {isAdmin && (
-                <td className="actions">
-                  <Link to={`/locations/${l.id}/edit`} className="btn btn-sm">Edit</Link>
-                  <button onClick={() => handleDelete(l.id, l.locationName)} className="btn btn-sm btn-danger">Delete</button>
+                <td>
+                  <div className="flex gap-1">
+                    <Link to={`/locations/${l.id}/edit`} className="btn btn-sm">Edit</Link>
+                    <button onClick={() => handleDelete(l.id, l.locationName)} className="btn btn-sm btn-danger">Delete</button>
+                  </div>
                 </td>
               )}
             </tr>
           ))}
           {locations.length === 0 && (
-            <tr><td colSpan={isAdmin ? 6 : 5} className="empty">No locations found.</td></tr>
+            <tr><td colSpan={isAdmin ? 6 : 5} className="table-empty">No locations found.</td></tr>
           )}
         </tbody>
       </table>

@@ -67,52 +67,36 @@ export default function LocationEditPage() {
 
   return (
     <div>
-      <h2>{isNew ? 'Add Location' : 'Edit Location'}</h2>
+      <h2 className="page-title">{isNew ? 'Add Location' : 'Edit Location'}</h2>
 
       {error && <div className="error-msg">{error}</div>}
 
       <form onSubmit={handleSubmit} className="edit-form">
         <div className="form-group">
-          <label htmlFor="locationName">Location Name *</label>
-          <input
-            id="locationName"
-            name="locationName"
-            value={form.locationName}
-            onChange={handleChange}
-            required
-          />
+          <label htmlFor="locationName" className="form-label">Location Name *</label>
+          <input id="locationName" name="locationName" value={form.locationName} onChange={handleChange} required className="form-input" />
         </div>
 
         <div className="form-group">
-          <label htmlFor="address">Address</label>
-          <input
-            id="address"
-            name="address"
-            value={form.address}
-            onChange={handleChange}
-          />
+          <label htmlFor="address" className="form-label">Address</label>
+          <input id="address" name="address" value={form.address} onChange={handleChange} className="form-input" />
         </div>
 
         <div className="form-group">
-          <label htmlFor="zipCode">Zip Code</label>
-          <input
-            id="zipCode"
-            name="zipCode"
-            value={form.zipCode}
-            onChange={handleChange}
-          />
+          <label htmlFor="zipCode" className="form-label">Zip Code</label>
+          <input id="zipCode" name="zipCode" value={form.zipCode} onChange={handleChange} className="form-input" />
         </div>
 
         <div className="form-group">
-          <label htmlFor="state">State</label>
-          <select id="state" name="state" value={form.state} onChange={handleChange}>
+          <label htmlFor="state" className="form-label">State</label>
+          <select id="state" name="state" value={form.state} onChange={handleChange} className="form-input">
             <option value="ACTIVE">Active</option>
             <option value="NOT_ACTIVE">Not Active</option>
           </select>
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="btn" disabled={saving}>
+          <button type="submit" className="btn disabled:opacity-50" disabled={saving}>
             {saving ? 'Saving...' : 'Save'}
           </button>
           <button type="button" className="btn btn-secondary" onClick={() => navigate('/locations')}>

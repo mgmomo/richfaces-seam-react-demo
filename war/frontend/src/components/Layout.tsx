@@ -27,19 +27,23 @@ export default function Layout() {
   }
 
   return (
-    <div className="app">
+    <div className="app-shell">
       <header className="app-header">
-        <div className="header-top">
-          <h1 className="app-title">Vision4 React</h1>
-          <div className="role-switcher">
+        <div className="flex justify-between items-center flex-wrap gap-3">
+          <h1 className="text-xl font-semibold">Vision4 React</h1>
+          <div className="flex items-center gap-2 flex-wrap">
             <input
               type="text"
               placeholder="username"
               value={userPick}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setUserPick(e.target.value)}
-              className="role-input"
+              className="header-input"
             />
-            <select value={rolePick} onChange={(e: ChangeEvent<HTMLSelectElement>) => setRolePick(e.target.value)} className="role-select">
+            <select
+              value={rolePick}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) => setRolePick(e.target.value)}
+              className="header-select"
+            >
               {ROLES.map((r) => (
                 <option key={r} value={r}>{r}</option>
               ))}
@@ -53,13 +57,13 @@ export default function Layout() {
             )}
           </div>
         </div>
-        <nav className="app-nav">
-          <Link to="/">Home</Link>
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/persons">People</Link>
-          <Link to="/locations">Locations</Link>
-          <a href="/vision4-seam/home.seam">Vision</a>
-          <Link to="/about">About</Link>
+        <nav className="mt-2 flex gap-4">
+          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/dashboard" className="nav-link">Dashboard</Link>
+          <Link to="/persons" className="nav-link">People</Link>
+          <Link to="/locations" className="nav-link">Locations</Link>
+          <a href="/vision4-seam/home.seam" className="nav-link">Vision</a>
+          <Link to="/about" className="nav-link">About</Link>
         </nav>
       </header>
 
