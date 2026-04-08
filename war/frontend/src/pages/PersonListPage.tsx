@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { fetchPersons, deletePerson } from '../api/personApi';
 import { useAuth } from '../context/AuthContext';
+import { PersonDto } from '../types';
 
 export default function PersonListPage() {
-  const [persons, setPersons] = useState([]);
-  const [error, setError] = useState(null);
+  const [persons, setPersons] = useState<PersonDto[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
 
@@ -18,17 +19,17 @@ export default function PersonListPage() {
       setError(null);
       const data = await fetchPersons();
       setPersons(data);
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     }
   }
 
-  async function handleDelete(id, name) {
+  async function handleDelete(id: number, name: string) {
     if (!confirm(`Delete person "${name}"?`)) return;
     try {
       await deletePerson(id);
       loadPersons();
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     }
   }

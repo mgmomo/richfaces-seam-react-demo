@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchLocations, deleteLocation } from '../api/locationApi';
 import { useAuth } from '../context/AuthContext';
+import { LocationDto } from '../types';
 
 export default function LocationListPage() {
-  const [locations, setLocations] = useState([]);
-  const [error, setError] = useState(null);
+  const [locations, setLocations] = useState<LocationDto[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const { isAdmin } = useAuth();
 
   useEffect(() => {
@@ -17,17 +18,17 @@ export default function LocationListPage() {
       setError(null);
       const data = await fetchLocations();
       setLocations(data);
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     }
   }
 
-  async function handleDelete(id, name) {
+  async function handleDelete(id: number, name: string) {
     if (!confirm(`Delete location "${name}"?`)) return;
     try {
       await deleteLocation(id);
       loadLocations();
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     }
   }

@@ -1,21 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchPerson, createPerson, updatePerson } from '../api/personApi';
 import { fetchLocations } from '../api/locationApi';
+import { LocationDto } from '../types';
+
+interface PersonForm {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  locationIds: number[];
+}
 
 export default function PersonEditPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isNew = !id;
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<PersonForm>({
     firstName: '',
     lastName: '',
     dateOfBirth: '',
     locationIds: [],
   });
-  const [allLocations, setAllLocations] = useState([]);
-  const [error, setError] = useState(null);
+  const [allLocations, setAllLocations] = useState<LocationDto[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -29,30 +37,30 @@ export default function PersonEditPage() {
     try {
       const data = await fetchLocations(true);
       setAllLocations(data);
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     }
   }
 
   async function loadPerson() {
     try {
-      const data = await fetchPerson(id);
+      const data = await fetchPerson(id!);
       setForm({
         firstName: data.firstName || '',
         lastName: data.lastName || '',
         dateOfBirth: data.dateOfBirth || '',
         locationIds: data.locations ? data.locations.map((l) => l.id) : [],
       });
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     }
   }
 
-  function handleChange(e) {
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleLocationToggle(locId) {
+  function handleLocationToggle(locId: number) {
     setForm((prev) => {
       const ids = prev.locationIds.includes(locId)
         ? prev.locationIds.filter((x) => x !== locId)
@@ -61,18 +69,18 @@ export default function PersonEditPage() {
     });
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
       if (isNew) {
-        await createPerson(form);
+        await createPerson(form as unknown as Record<string, unknown>);
       } else {
-        await updatePerson(id, form);
+        await updatePerson(id!, form as unknown as Record<string, unknown>);
       }
       navigate('/persons');
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     } finally {
       setSaving(false);

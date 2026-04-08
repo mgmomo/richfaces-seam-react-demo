@@ -1,8 +1,14 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { type ReactNode } from 'react';
 
-export default function ProtectedRoute({ requiredRole, children }) {
-  const { user, loading, isAdmin, isUser } = useAuth();
+interface ProtectedRouteProps {
+  requiredRole: 'ADMIN' | 'USER';
+  children: ReactNode;
+}
+
+export default function ProtectedRoute({ requiredRole, children }: ProtectedRouteProps) {
+  const { loading, isAdmin, isUser } = useAuth();
 
   if (loading) {
     return <div className="loading">Loading...</div>;

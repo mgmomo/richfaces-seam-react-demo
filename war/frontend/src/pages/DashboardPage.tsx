@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchDashboard } from '../api/dashboardApi';
+import { DashboardData, StateCount, LocationPersonCount } from '../types';
+import { type ReactNode } from 'react';
 
 const COLORS = ['#2b6cb0', '#e53e3e', '#38a169', '#d69e2e', '#805ad5', '#dd6b20', '#319795', '#b83280', '#2d3748', '#718096'];
 const embedded = window.self !== window.top;
 const CTX = '/vision4-seam';
 
-function DashLink({ to, jsfPath, children }) {
+interface DashLinkProps {
+  to: string;
+  jsfPath: string;
+  children: ReactNode;
+}
+
+function DashLink({ to, jsfPath, children }: DashLinkProps) {
   if (embedded) {
     return (
       <a
@@ -14,7 +22,7 @@ function DashLink({ to, jsfPath, children }) {
         target="_top"
         onClick={(e) => {
           e.preventDefault();
-          window.top.location.href = `${CTX}${jsfPath}`;
+          window.top!.location.href = `${CTX}${jsfPath}`;
         }}
       >
         {children}
@@ -24,7 +32,7 @@ function DashLink({ to, jsfPath, children }) {
   return <Link to={to}>{children}</Link>;
 }
 
-function PieChart({ data }) {
+function PieChart({ data }: { data: StateCount[] }) {
   if (!data || data.length === 0) return null;
   const total = data.reduce((sum, d) => sum + d.count, 0);
   if (total === 0) return <p className="muted">No locations yet</p>;
@@ -79,7 +87,7 @@ function PieChart({ data }) {
   );
 }
 
-function BarChart({ data }) {
+function BarChart({ data }: { data: LocationPersonCount[] }) {
   if (!data || data.length === 0) return <p className="muted">No data yet</p>;
   const max = Math.max(...data.map((d) => d.personCount));
   if (max === 0) return <p className="muted">No assignments yet</p>;
@@ -108,13 +116,13 @@ function BarChart({ data }) {
 }
 
 export default function DashboardPage() {
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDashboard()
       .then(setData)
-      .catch((err) => setError(err.message));
+      .catch((err: Error) => setError(err.message));
   }, []);
 
   if (error) return <div className="error-msg">{error}</div>;
@@ -123,6 +131,7 @@ export default function DashboardPage() {
   return (
     <div className="dashboard">
       <h2>Dashboard</h2>
+      <p className="muted">Läuft unter TypeScript</p>
 
       <div className="dashboard-cards">
         <div className="dash-card">

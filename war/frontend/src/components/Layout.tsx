@@ -1,21 +1,21 @@
 import { Link, Outlet } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, type ChangeEvent, type MouseEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const ROLES = ['ADMIN', 'USER', 'GUEST'];
 const embedded = window.self !== window.top;
 
 export default function Layout() {
-  const { user, isAdmin, isUser, login, logout } = useAuth();
+  const { user, login, logout } = useAuth();
   const [rolePick, setRolePick] = useState(localStorage.getItem('auth_role') || 'GUEST');
   const [userPick, setUserPick] = useState(localStorage.getItem('auth_user') || '');
 
-  function handleRoleSwitch(e) {
+  function handleRoleSwitch(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     login(userPick || rolePick.toLowerCase(), rolePick);
   }
 
-  function handleLogout(e) {
+  function handleLogout(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
     setRolePick('GUEST');
     setUserPick('');
@@ -36,10 +36,10 @@ export default function Layout() {
               type="text"
               placeholder="username"
               value={userPick}
-              onChange={(e) => setUserPick(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setUserPick(e.target.value)}
               className="role-input"
             />
-            <select value={rolePick} onChange={(e) => setRolePick(e.target.value)} className="role-select">
+            <select value={rolePick} onChange={(e: ChangeEvent<HTMLSelectElement>) => setRolePick(e.target.value)} className="role-select">
               {ROLES.map((r) => (
                 <option key={r} value={r}>{r}</option>
               ))}

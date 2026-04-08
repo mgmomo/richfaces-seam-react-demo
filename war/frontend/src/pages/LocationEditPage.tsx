@@ -1,19 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchLocation, createLocation, updateLocation } from '../api/locationApi';
 
+interface LocationForm {
+  locationName: string;
+  address: string;
+  zipCode: string;
+  state: string;
+}
+
 export default function LocationEditPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isNew = !id;
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<LocationForm>({
     locationName: '',
     address: '',
     zipCode: '',
     state: 'ACTIVE',
   });
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -24,34 +31,34 @@ export default function LocationEditPage() {
 
   async function loadLocation() {
     try {
-      const data = await fetchLocation(id);
+      const data = await fetchLocation(id!);
       setForm({
         locationName: data.locationName || '',
         address: data.address || '',
         zipCode: data.zipCode || '',
         state: data.state || 'ACTIVE',
       });
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     }
   }
 
-  function handleChange(e) {
+  function handleChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
       if (isNew) {
-        await createLocation(form);
+        await createLocation(form as unknown as Record<string, unknown>);
       } else {
-        await updateLocation(id, form);
+        await updateLocation(id!, form as unknown as Record<string, unknown>);
       }
       navigate('/locations');
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     } finally {
       setSaving(false);
