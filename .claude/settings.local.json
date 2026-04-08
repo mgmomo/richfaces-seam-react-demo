@@ -9,7 +9,8 @@
       "Bash(ls:*)",
       "Bash(pkill:*)",
       "Bash(pgrep:*)",
-      "Bash(./start-jboss.sh:*)"
+      "Bash(./start-jboss.sh:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
