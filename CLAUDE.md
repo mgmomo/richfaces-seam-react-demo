@@ -16,22 +16,18 @@ Vision4-seam is a legacy demo application simulating a small enterprise Java EE 
 # Start JBoss AS 7.1.1 using the local environment
 ./start-jboss.sh
 
-# In a separate terminal: build and deploy as WAR (default)
+# In a separate terminal: build and deploy as EAR
 ./build-deploy.sh
-
-# Or: build and deploy as EAR
-./build-deploy.sh --ear
 ```
 
 ### Scripts
 
 - **`start-jboss.sh`** — Starts JBoss AS 7.1.1 using the local Java 7 and JBoss installation. Automatically stops any running instance, cleans stale deployment markers, and starts with port offset 100.
-- **`build-deploy.sh`** — Builds the React frontend (`npm run build`), builds WAR + EAR using the local Maven (`local/apache-maven-3.8.7`), and deploys to local JBoss. Use `--ear` flag for EAR deployment.
+- **`build-deploy.sh`** — Builds the React frontend (`npm run build`), builds WAR + EAR using the local Maven (`local/apache-maven-3.8.7`), and deploys the EAR to local JBoss.
 
-### Deployment Modes
+### Deployment
 
-- **WAR (default):** Fat WAR with all libraries in `WEB-INF/lib`. Deployed as `vision4-seam.war`.
-- **EAR (`--ear`):** Skinny WAR with empty `WEB-INF/lib`. All libraries in `EAR/lib/`. Deployed as `vision4-seam.ear`.
+EAR packaging is used: skinny WAR with empty `WEB-INF/lib`, all libraries in `EAR/lib/`. Deployed as `vision4-seam.ear`.
 
 ### Manual Build and Deploy
 
@@ -42,14 +38,12 @@ cd war/frontend && npm run build && cd ../..
 # Build WAR + EAR (requires Maven 3.x; runs on Java 17 for compilation, targets Java 7 bytecode)
 mvn clean package
 
-# Deploy WAR to local JBoss AS 7.1.1
-cp war/target/vision4-seam.war local/jboss-as-7.1.1.Final/standalone/deployments/
-
-# Or deploy EAR
+# Deploy EAR to local JBoss AS 7.1.1
 cp ear/target/vision4-seam.ear local/jboss-as-7.1.1.Final/standalone/deployments/
 ```
 
 The application is accessible at:
+- **Landing page:** `http://localhost:8180/vision4-seam/` (`index.html` — links to JSF and React apps)
 - **JSF app:** `http://localhost:8180/vision4-seam/home.seam`
 - **React app:** `http://localhost:8180/vision4-seam/app/`
 
@@ -95,7 +89,7 @@ Two-layer architecture: **Seam POJO action components** (UI/conversation logic) 
 ```
 pom.xml                         # Parent POM (multi-module: war, ear)
 start-jboss.sh                  # Start local JBoss AS 7.1.1
-build-deploy.sh                 # Build and deploy (--ear for EAR mode)
+build-deploy.sh                 # Build and deploy (EAR)
 
 war/                            # WAR module
   pom.xml                       # WAR packaging
@@ -117,7 +111,8 @@ war/                            # WAR module
     rest/                       # JAX-RS REST resources: PersonResource, LocationResource, DashboardResource, AuthResource
   src/main/webapp/
     layout/template.xhtml       # Facelets master template (header, menu, footer, React toggle)
-    home.xhtml                  # Landing page
+    index.html                  # Landing page (links to JSF and React apps)
+    home.xhtml                  # JSF home page
     personEdit.xhtml            # Create/edit person with location assignment
     personList.xhtml            # Person list with rich:dataTable
     personReact.xhtml           # Person list via embedded React iframe

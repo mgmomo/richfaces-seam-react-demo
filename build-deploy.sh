@@ -12,6 +12,11 @@ MVN_HOME="$SCRIPT_DIR/local/apache-maven-3.8.7"
 DEPLOY_DIR="$JBOSS_HOME/standalone/deployments"
 MVN="$MVN_HOME/bin/mvn"
 
+DEPLOY_MODE="war"
+if [ "$1" = "--ear" ]; then
+    DEPLOY_MODE="ear"
+fi
+
 echo "=== Building React frontend ==="
 cd "$PROJECT_DIR/war/frontend"
 npm run build
@@ -22,12 +27,19 @@ cd "$PROJECT_DIR"
 "$MVN" clean package -q
 
 # Remove any previous deployment (war or ear)
+rm -f "$DEPLOY_DIR/vision4-seam.war" "$DEPLOY_DIR/vision4-seam.war.deployed" "$DEPLOY_DIR/vision4-seam.war.failed" "$DEPLOY_DIR/vision4-seam.war.undeployed"
 rm -f "$DEPLOY_DIR/vision4-seam.ear" "$DEPLOY_DIR/vision4-seam.ear.deployed" "$DEPLOY_DIR/vision4-seam.ear.failed" "$DEPLOY_DIR/vision4-seam.ear.undeployed"
 
 echo ""
-echo "=== Deploying EAR to JBoss ==="
-cp "$PROJECT_DIR/ear/target/vision4-seam.ear" "$DEPLOY_DIR/"
-ARTIFACT="vision4-seam.ear"
+if [ "$DEPLOY_MODE" = "ear" ]; then
+    echo "=== Deploying EAR to JBoss ==="
+    cp "$PROJECT_DIR/ear/target/vision4-seam.ear" "$DEPLOY_DIR/"
+    ARTIFACT="vision4-seam.ear"
+else
+    echo "=== Deploying WAR to JBoss ==="
+    cp "$PROJECT_DIR/war/target/vision4-seam.war" "$DEPLOY_DIR/"
+    ARTIFACT="vision4-seam.war"
+fi
 
 echo ""
 echo "Waiting for deployment..."
