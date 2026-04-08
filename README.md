@@ -33,17 +33,17 @@ A demo application showing a legacy Java EE stack (JBoss Seam 2, RichFaces 3, JS
 ### Prerequisites
 
 - Java 17+ (for Maven compilation)
-- Maven 3.x
 - Node.js 18+
 
 ### Setup
 
-The `local/` directory must contain the JBoss AS 7.1.1 runtime and Zulu Java 7:
+The `local/` directory must contain the runtime environment:
 
 ```
 local/
-  jboss-as-7.1.1.Final/
-  zulu7.56.0.11-ca-jdk7.0.352-linux_x64/
+  apache-maven-3.8.7/                        # Apache Maven 3.8.7
+  jboss-as-7.1.1.Final/                      # JBoss AS 7.1.1
+  zulu7.56.0.11-ca-jdk7.0.352-linux_x64/     # Zulu JDK 7
 ```
 
 ### Run
@@ -98,7 +98,7 @@ ear/                     # EAR module
   src/main/application/META-INF/
     jboss-deployment-structure.xml
 
-local/                   # Runtime environment (not in git)
+local/                   # Runtime environment (Maven, JBoss, JDK 7)
 ```
 
 ## Architecture

@@ -26,7 +26,7 @@ Vision4-seam is a legacy demo application simulating a small enterprise Java EE 
 ### Scripts
 
 - **`start-jboss.sh`** — Starts JBoss AS 7.1.1 using the local Java 7 and JBoss installation. Automatically stops any running instance, cleans stale deployment markers, and starts with port offset 100.
-- **`build-deploy.sh`** — Builds the React frontend (`npm run build`), builds WAR + EAR (`mvn clean package`), and deploys to local JBoss. Use `--ear` flag for EAR deployment.
+- **`build-deploy.sh`** — Builds the React frontend (`npm run build`), builds WAR + EAR using the local Maven (`local/apache-maven-3.8.7`), and deploys to local JBoss. Use `--ear` flag for EAR deployment.
 
 ### Deployment Modes
 
@@ -65,6 +65,7 @@ JBoss AS 7.1.1 and Zulu Java 7 are bundled in the `local/` directory:
 local/
   jboss-as-7.1.1.Final/    # JBoss AS 7.1.1 application server
   zulu7.56.0.11-ca-jdk7.0.352-linux_x64/   # Zulu JDK 7 (runtime)
+  apache-maven-3.8.7/      # Apache Maven 3.8.7 (build)
 ```
 
 The local JBoss installation has these patches applied:
@@ -135,6 +136,7 @@ ear/                            # EAR module
     jboss-deployment-structure.xml  # EAR-level: JSF 2.0 exclusion + module dependencies
 
 local/                          # Local runtime environment (not in git)
+  apache-maven-3.8.7/          # Apache Maven 3.8.7 (build)
   jboss-as-7.1.1.Final/        # JBoss AS 7.1.1 application server
   zulu7.56.0.11-ca-jdk7.0.352-linux_x64/  # Zulu JDK 7
 ```

@@ -8,7 +8,9 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR"
 JBOSS_HOME="$SCRIPT_DIR/local/jboss-as-7.1.1.Final"
+MVN_HOME="$SCRIPT_DIR/local/apache-maven-3.8.7"
 DEPLOY_DIR="$JBOSS_HOME/standalone/deployments"
+MVN="$MVN_HOME/bin/mvn"
 
 DEPLOY_MODE="war"
 if [ "$1" = "--ear" ]; then
@@ -22,7 +24,7 @@ npm run build
 echo ""
 echo "=== Building modules (WAR + EAR) ==="
 cd "$PROJECT_DIR"
-mvn clean package -q
+"$MVN" clean package -q
 
 # Remove any previous deployment (war or ear)
 rm -f "$DEPLOY_DIR/vision4-seam.war" "$DEPLOY_DIR/vision4-seam.war.deployed" "$DEPLOY_DIR/vision4-seam.war.failed" "$DEPLOY_DIR/vision4-seam.war.undeployed"
