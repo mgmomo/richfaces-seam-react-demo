@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Vision4-seam is a legacy demo application simulating a small enterprise Java EE system. It manages persons and locations with a many-to-many relationship between them.
 
-**Stack:** JBoss Seam 2.2.2.Final, RichFaces 3.3.4.Final, JSF 1.2 (Facelets 1.1), JPA 2.0, Hibernate 3.3.0.SP1 (bundled), deployed on JBoss AS 7.1.1. The React frontend uses TypeScript, Tailwind CSS 4, and Vite.
+**Stack:** JBoss Seam 2.2.2.Final, RichFaces 3.3.4.Final, JSF 1.2 (Facelets 1.1), JPA 2.0, Hibernate 3.3.0.SP1 (bundled), deployed on JBoss AS 7.1.1. The React frontend uses TypeScript, Tailwind CSS 4, Vite, and Yarn 4 (Berry).
 
 ## Build and Deploy
 
@@ -23,7 +23,7 @@ Vision4-seam is a legacy demo application simulating a small enterprise Java EE 
 ### Scripts
 
 - **`start-jboss.sh`** — Starts JBoss AS 7.1.1 using the local Java 7 and JBoss installation. Automatically stops any running instance, cleans stale deployment markers, and starts with port offset 100.
-- **`build-deploy.sh`** — Builds the React frontend (`npm run build`), builds WAR + EAR using the local Maven (`local/apache-maven-3.8.7`), and deploys the EAR to local JBoss.
+- **`build-deploy.sh`** — Builds the React frontend (`yarn build`), builds WAR + EAR using the local Maven (`local/apache-maven-3.8.7`), and deploys the EAR to local JBoss.
 
 ### Deployment
 
@@ -33,7 +33,7 @@ EAR packaging is used: skinny WAR with empty `WEB-INF/lib`, all libraries in `EA
 
 ```bash
 # Build the React frontend
-cd war/frontend && npm run build && cd ../..
+cd war/frontend && yarn build && cd ../..
 
 # Build WAR + EAR (requires Maven 3.x; runs on Java 17 for compilation, targets Java 7 bytecode)
 mvn clean package
@@ -93,7 +93,7 @@ build-deploy.sh                 # Build and deploy (EAR)
 
 war/                            # WAR module
   pom.xml                       # WAR packaging
-  frontend/                     # React SPA (TypeScript, Vite, Tailwind CSS 4)
+  frontend/                     # React SPA (TypeScript, Vite, Tailwind CSS 4, Yarn 4)
     src/
       api/client.ts             # Typed API base client (base URL: /vision4-seam/api)
       api/dashboardApi.ts       # Dashboard API (fetches aggregated stats)

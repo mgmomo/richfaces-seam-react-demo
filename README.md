@@ -17,6 +17,7 @@ A demo application showing a legacy Java EE stack (JBoss Seam 2, RichFaces 3, JS
 - React Router (HashRouter)
 - Tailwind CSS 4
 - Vite
+- Yarn 4 (Berry)
 
 ## Features
 
@@ -34,7 +35,7 @@ A demo application showing a legacy Java EE stack (JBoss Seam 2, RichFaces 3, JS
 ### Prerequisites
 
 - Java 17+ (for Maven compilation)
-- Node.js 18+
+- Node.js 18+ (Corepack enabled for Yarn 4)
 
 ### Setup
 
@@ -74,7 +75,7 @@ To develop the React frontend with hot reload, use the Vite dev server. Changes 
 
 ```bash
 cd war/frontend
-npm run dev
+yarn dev
 ```
 
 The dev server starts at `http://localhost:5173/vision4-seam/app/` with Hot Module Replacement (HMR). API requests to `/vision4-seam/api` are automatically proxied to JBoss on port 8180 (configured in `vite.config.ts`).

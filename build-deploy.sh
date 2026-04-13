@@ -19,7 +19,7 @@ fi
 
 echo "=== Building React frontend ==="
 cd "$PROJECT_DIR/war/frontend"
-npm run build
+yarn build
 
 echo ""
 echo "=== Building modules (WAR + EAR) ==="

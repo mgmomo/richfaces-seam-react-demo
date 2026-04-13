@@ -132,7 +132,7 @@ export default function DashboardPage() {
   return (
     <div>
       <h2 className="page-title">Dashboard</h2>
-      <p className="text-muted mb-4">Läuft unter TypeScript</p>
+      <p className="text-muted mb-4">Läuft unter TypeScript und Yarn</p>
 
       <div className="dash-grid">
         <div className="dash-card">
